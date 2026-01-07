@@ -14,9 +14,13 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { CashService } from './cash.service';
 import { CreateCashTransactionDto } from './dto/create-cash-transaction.dto';
 import { VoidCashTransactionDto } from './dto/void-cash-transaction.dto';
+
+@ApiTags('cash')
+@ApiBearerAuth('JWT-auth')
 
 @Controller('cash')
 export class CashController {
