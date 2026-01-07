@@ -8,6 +8,7 @@ import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UnitsModule } from './units/units.module';
 import { StockModule } from './stock/stock.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -43,6 +44,8 @@ import { StockModule } from './stock/stock.module';
     UnitsModule,
     // Stock Module
     StockModule,
+    // Invoices Module
+    InvoicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
