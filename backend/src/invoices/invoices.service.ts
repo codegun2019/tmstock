@@ -15,6 +15,7 @@ import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceItem } from '../entities/InvoiceItem.entity';
 import { Product } from '../entities/Product.entity';
 import { StockService } from '../stock/stock.service';
+import { InvoiceSequenceService } from './invoice-sequence.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { PayInvoiceDto } from './dto/pay-invoice.dto';
 import { VoidInvoiceDto } from './dto/void-invoice.dto';
@@ -30,6 +31,7 @@ export class InvoicesService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     private stockService: StockService,
+    private invoiceSequenceService: InvoiceSequenceService,
     private dataSource: DataSource,
   ) {}
 
@@ -86,8 +88,14 @@ export class InvoicesService {
       const taxAmount = 0; // ⭐ Can be calculated if needed
       const totalAmount = subtotal - discountAmount + taxAmount;
 
+      // ⭐ Generate invoice number
+      const invoiceNo = await this.invoiceSequenceService.generateInvoiceNumber(
+        createInvoiceDto.branch_id,
+      );
+
       // Create invoice
       const invoice = queryRunner.manager.create(Invoice, {
+        invoice_no: invoiceNo,
         branch_id: createInvoiceDto.branch_id,
         user_id: userId,
         ref_employee_id: createInvoiceDto.ref_employee_id,

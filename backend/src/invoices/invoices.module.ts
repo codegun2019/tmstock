@@ -9,16 +9,19 @@ import { InvoicesController } from './invoices.controller';
 import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceItem } from '../entities/InvoiceItem.entity';
 import { Product } from '../entities/Product.entity';
+import { InvoiceSequence } from '../entities/InvoiceSequence.entity';
+import { Branch } from '../entities/Branch.entity';
 import { StockModule } from '../stock/stock.module'; // ⭐ Import StockModule to use StockService
+import { InvoiceSequenceService } from './invoice-sequence.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Invoice, InvoiceItem, Product]),
+    TypeOrmModule.forFeature([Invoice, InvoiceItem, Product, InvoiceSequence, Branch]),
     StockModule, // ⭐ Import StockModule to access StockService
   ],
+  providers: [InvoicesService, InvoiceSequenceService],
   controllers: [InvoicesController],
-  providers: [InvoicesService],
-  exports: [InvoicesService],
+  exports: [InvoicesService, InvoiceSequenceService],
 })
 export class InvoicesModule {}
 
