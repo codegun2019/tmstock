@@ -4,11 +4,12 @@
  */
 
 import { DataSource } from 'typeorm';
-import { config } from 'dotenv';
+import * as dotenv from 'dotenv';
 import { runSeeders } from './main.seeder';
+import * as path from 'path';
 
 // Load environment variables
-config();
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 async function bootstrap() {
   const dataSource = new DataSource({
