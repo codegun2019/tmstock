@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UnitsModule } from './units/units.module';
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
@@ -40,6 +41,8 @@ import { UnitsModule } from './units/units.module';
     CategoriesModule,
     // Units Module
     UnitsModule,
+    // Stock Module
+    StockModule,
   ],
   controllers: [AppController],
   providers: [AppService],

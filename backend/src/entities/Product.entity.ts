@@ -14,6 +14,8 @@ import {
 } from 'typeorm';
 import { Category } from './Category.entity';
 import { Unit } from './Unit.entity';
+import { StockBalance } from './StockBalance.entity';
+import { StockMovement } from './StockMovement.entity';
 
 @Entity('products')
 @Index(['barcode'], { unique: true })
@@ -69,5 +71,12 @@ export class Product {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  // Relations
+  @OneToMany(() => StockBalance, (balance) => balance.product)
+  stock_balances: StockBalance[];
+
+  @OneToMany(() => StockMovement, (movement) => movement.product)
+  stock_movements: StockMovement[];
 }
 
