@@ -8,7 +8,6 @@ import { seedBranches } from './branches.seeder';
 import { seedRolesAndPermissions } from './roles-permissions.seeder';
 import { seedUsers } from './users.seeder';
 import { seedCashCategories } from './cash-categories.seeder';
-import { seedCashCategories } from './cash-categories.seeder';
 
 export async function runSeeders(dataSource: DataSource) {
   console.log('🌱 Starting seeders...\n');
