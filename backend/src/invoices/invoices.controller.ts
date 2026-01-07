@@ -14,7 +14,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { PayInvoiceDto } from './dto/pay-invoice.dto';
@@ -34,23 +34,37 @@ export class InvoicesController {
   }
 
   @Get()
-  findAll(@Query('branch_id') branchId?: string, @Query('status') status?: string) {
+  @ApiOperation({ summary: 'List invoices with filters' })
+  findAll(
+    @Query('branch_id') branchId?: string,
+    @Query('status') status?: string,
+    @Query('date_from') dateFrom?: string,
+    @Query('date_to') dateTo?: string,
+    @Query('customer_name') customerName?: string,
+    @Query('limit') limit?: string,
+  ) {
     const branchIdNum = branchId ? parseInt(branchId, 10) : undefined;
-    return this.invoicesService.findAll(branchIdNum, status);
+    const limitNum = limit ? parseInt(limit, 10) : 50;
+    return this.invoicesService.findAll(branchIdNum, status, dateFrom, dateTo, customerName, limitNum);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get invoice by ID with items' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.invoicesService.findOne(id);
   }
 
   @Get(':id/stock-movements')
+  @ApiOperation({ summary: 'Get stock movements for invoice (UX Integration)' })
   async getInvoiceStockMovements(@Param('id', ParseIntPipe) id: number) {
     return this.invoicesService.getStockMovements(id);
   }
 
   @Post(':id/pay')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Pay invoice (deducts stock and creates cash transaction)' })
+  @ApiResponse({ status: 200, description: 'Invoice paid successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid payment or insufficient stock' })
   payInvoice(
     @Param('id', ParseIntPipe) id: number,
     @Body() payInvoiceDto: PayInvoiceDto,
@@ -61,6 +75,8 @@ export class InvoicesController {
 
   @Post(':id/void')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Void invoice (unpaid invoices only)' })
+  @ApiResponse({ status: 200, description: 'Invoice voided successfully' })
   voidInvoice(
     @Param('id', ParseIntPipe) id: number,
     @Body() voidInvoiceDto: VoidInvoiceDto,
@@ -71,6 +87,8 @@ export class InvoicesController {
 
   @Post(':id/refund')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refund invoice (returns stock and creates cash transaction)' })
+  @ApiResponse({ status: 200, description: 'Invoice refunded successfully' })
   refundInvoice(
     @Param('id', ParseIntPipe) id: number,
     @Body() refundInvoiceDto: RefundInvoiceDto,

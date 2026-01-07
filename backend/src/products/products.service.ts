@@ -55,13 +55,36 @@ export class ProductsService {
     return await this.productRepository.save(product);
   }
 
-  async findAll(activeOnly: boolean = false): Promise<Product[]> {
-    const where = activeOnly ? { active: 1 } : {};
-    return await this.productRepository.find({
-      where,
-      relations: ['category', 'unit'],
-      order: { name: 'ASC' },
-    });
+  async findAll(
+    activeOnly: boolean = false,
+    search?: string,
+    categoryId?: number,
+    limit: number = 100,
+  ): Promise<Product[]> {
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.unit', 'unit');
+
+    if (activeOnly) {
+      queryBuilder.andWhere('product.active = 1');
+    }
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(product.name LIKE :search OR product.barcode LIKE :search OR product.sku LIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (categoryId) {
+      queryBuilder.andWhere('product.category_id = :categoryId', { categoryId });
+    }
+
+    return await queryBuilder
+      .orderBy('product.name', 'ASC')
+      .take(limit)
+      .getMany();
   }
 
   async findOne(id: number): Promise<Product> {

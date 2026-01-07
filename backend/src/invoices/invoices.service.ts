@@ -393,18 +393,49 @@ export class InvoicesService {
   }
 
   /**
-   * Find all invoices
+   * Find all invoices with filters
    */
-  async findAll(branchId?: number, status?: string): Promise<Invoice[]> {
-    const where: any = {};
-    if (branchId) where.branch_id = branchId;
-    if (status) where.status = status;
+  async findAll(
+    branchId?: number,
+    status?: string,
+    dateFrom?: string,
+    dateTo?: string,
+    customerName?: string,
+    limit: number = 50,
+  ): Promise<Invoice[]> {
+    const queryBuilder = this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .leftJoinAndSelect('invoice.items', 'items')
+      .leftJoinAndSelect('items.product', 'product')
+      .leftJoinAndSelect('invoice.user', 'user')
+      .leftJoinAndSelect('invoice.branch', 'branch');
 
-    return await this.invoiceRepository.find({
-      where,
-      relations: ['items', 'items.product', 'user', 'branch'],
-      order: { created_at: 'DESC' },
-    });
+    if (branchId) {
+      queryBuilder.andWhere('invoice.branch_id = :branchId', { branchId });
+    }
+
+    if (status) {
+      queryBuilder.andWhere('invoice.status = :status', { status });
+    }
+
+    if (dateFrom) {
+      queryBuilder.andWhere('DATE(invoice.created_at) >= :dateFrom', { dateFrom });
+    }
+
+    if (dateTo) {
+      queryBuilder.andWhere('DATE(invoice.created_at) <= :dateTo', { dateTo });
+    }
+
+    if (customerName) {
+      queryBuilder.andWhere('invoice.customer_name LIKE :customerName', {
+        customerName: `%${customerName}%`,
+      });
+    }
+
+    return await queryBuilder
+      .orderBy('invoice.created_at', 'DESC')
+      .take(limit)
+      .getMany();
   }
 
   /**

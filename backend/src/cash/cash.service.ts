@@ -234,5 +234,40 @@ export class CashService {
       order: { created_at: 'DESC' },
     });
   }
+
+  /**
+   * Cash Categories CRUD
+   */
+  async createCategory(data: { name: string; type: string; parent_id?: number; description?: string }): Promise<CashCategory> {
+    const category = this.cashCategoryRepository.create(data);
+    return await this.cashCategoryRepository.save(category);
+  }
+
+  async findAllCategories(type?: string): Promise<CashCategory[]> {
+    const where = type ? { type, active: 1 } : { active: 1 };
+    return await this.cashCategoryRepository.find({
+      where,
+      order: { name: 'ASC' },
+    });
+  }
+
+  async findCategoryById(id: number): Promise<CashCategory> {
+    const category = await this.cashCategoryRepository.findOne({ where: { id } });
+    if (!category) {
+      throw new NotFoundException(`Cash category with ID ${id} not found`);
+    }
+    return category;
+  }
+
+  async updateCategory(id: number, data: { name?: string; type?: string; description?: string; active?: number }): Promise<CashCategory> {
+    const category = await this.findCategoryById(id);
+    Object.assign(category, data);
+    return await this.cashCategoryRepository.save(category);
+  }
+
+  async deleteCategory(id: number): Promise<void> {
+    const category = await this.findCategoryById(id);
+    await this.cashCategoryRepository.remove(category);
+  }
 }
 
