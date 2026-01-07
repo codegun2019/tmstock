@@ -11,7 +11,6 @@ import {
   UpdateDateColumn,
   Index,
   Unique,
-  Generated,
 } from 'typeorm';
 import { Product } from './Product.entity';
 import { Branch } from './Branch.entity';
@@ -42,8 +41,13 @@ export class StockBalance {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   reserved_quantity: number; // ⭐ Reserved quantity (for pending orders)
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  @Generated('increment') // ⭐ GENERATED ALWAYS AS (quantity - reserved_quantity) STORED
+  @Column({ 
+    type: 'decimal', 
+    precision: 10, 
+    scale: 2,
+    generatedType: 'STORED',
+    asExpression: '(quantity - reserved_quantity)'
+  })
   available_quantity: number; // ⭐ Available quantity (computed: quantity - reserved_quantity)
 
   @Column({ type: 'datetime', nullable: true })
