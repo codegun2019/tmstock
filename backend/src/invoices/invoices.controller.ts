@@ -37,8 +37,13 @@ export class InvoicesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.invoicesService.findOne(id);
+  }
+
+  @Get(':id/stock-movements')
+  async getInvoiceStockMovements(@Param('id', ParseIntPipe) id: number) {
+    return this.invoicesService.getStockMovements(id);
   }
 
   @Post(':id/pay')

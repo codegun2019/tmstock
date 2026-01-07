@@ -45,6 +45,22 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  @Get(':id/stock')
+  async getProductStock(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.getStockByBranch(id);
+  }
+
+  @Get(':id/movements')
+  async getProductMovements(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('branch_id') branchId?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const branchIdNum = branchId ? parseInt(branchId, 10) : undefined;
+    const limitNum = limit ? parseInt(limit, 10) : 50;
+    return this.productsService.getStockMovements(id, branchIdNum, limitNum);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

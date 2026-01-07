@@ -275,5 +275,16 @@ export class StockService {
       order: { created_at: 'DESC' },
     });
   }
+
+  /**
+   * Get all stock movements (with limit)
+   */
+  async getAllMovements(limit: number = 100): Promise<StockMovement[]> {
+    return await this.stockMovementRepository.find({
+      relations: ['product', 'branch', 'creator'],
+      order: { created_at: 'DESC' },
+      take: limit,
+    });
+  }
 }
 

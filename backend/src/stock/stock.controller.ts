@@ -66,5 +66,35 @@ export class StockController {
   ) {
     return this.stockService.getMovementsByReference(referenceType, referenceId);
   }
+
+  @Get('movements')
+  getMovements(
+    @Query('refType') refType?: string,
+    @Query('refId') refId?: string,
+    @Query('productId') productId?: string,
+    @Query('branchId') branchId?: string,
+    @Query('limit') limit?: string,
+  ) {
+    // ⭐ UX Integration: Get movements with filters
+    if (refType && refId) {
+      return this.stockService.getMovementsByReference(
+        refType,
+        parseInt(refId, 10),
+      );
+    }
+
+    if (productId && branchId) {
+      const limitNum = limit ? parseInt(limit, 10) : 50;
+      return this.stockService.getStockMovements(
+        parseInt(productId, 10),
+        parseInt(branchId, 10),
+        limitNum,
+      );
+    }
+
+    // Return all movements (with limit)
+    const limitNum = limit ? parseInt(limit, 10) : 100;
+    return this.stockService.getAllMovements(limitNum);
+  }
 }
 

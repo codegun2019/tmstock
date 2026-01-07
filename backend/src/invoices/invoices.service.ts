@@ -410,5 +410,38 @@ export class InvoicesService {
 
     return invoice;
   }
+
+  /**
+   * Get stock movements for an invoice (UX Integration)
+   */
+  async getStockMovements(invoiceId: number) {
+    const invoice = await this.findOne(invoiceId);
+    
+    // Get stock movements linked to this invoice
+    const movements = await this.stockService.getMovementsByReference(
+      'invoice',
+      invoiceId,
+    );
+
+    return {
+      invoice: {
+        id: invoice.id,
+        invoice_no: invoice.invoice_no,
+        status: invoice.status,
+        total_amount: invoice.total_amount,
+      },
+      movements: movements.map((movement) => ({
+        id: movement.id,
+        product_id: movement.product_id,
+        product_name: movement.product?.name,
+        move_type: movement.move_type,
+        quantity: movement.quantity,
+        balance_before: movement.balance_before,
+        balance_after: movement.balance_after,
+        reason: movement.reason,
+        created_at: movement.created_at,
+      })),
+    };
+  }
 }
 
