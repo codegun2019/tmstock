@@ -29,7 +29,7 @@ import { CashModule } from './cash/cash.module';
         password: configService.get('DB_PASSWORD', ''),
         database: configService.get('DB_DATABASE', 'mstock'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') === 'development',
+        synchronize: false, // ⭐ Disable auto-sync to prevent schema conflicts
         logging: configService.get('NODE_ENV') === 'development',
         charset: 'utf8mb4',
       }),

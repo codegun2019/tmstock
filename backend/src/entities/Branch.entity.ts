@@ -12,7 +12,6 @@ import {
 } from 'typeorm';
 
 @Entity('branches')
-@Index(['code'], { unique: true })
 @Index(['active'])
 export class Branch {
   @PrimaryGeneratedColumn()
