@@ -14,12 +14,15 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { PayInvoiceDto } from './dto/pay-invoice.dto';
 import { VoidInvoiceDto } from './dto/void-invoice.dto';
 import { RefundInvoiceDto } from './dto/refund-invoice.dto';
 
+@ApiTags('invoices')
+@ApiBearerAuth('JWT-auth')
 @Controller('invoices')
 export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
