@@ -8,6 +8,7 @@ import { seedBranches } from './branches.seeder';
 import { seedRolesAndPermissions } from './roles-permissions.seeder';
 import { seedUsers } from './users.seeder';
 import { seedCashCategories } from './cash-categories.seeder';
+import { seedCashCategories } from './cash-categories.seeder';
 
 export async function runSeeders(dataSource: DataSource) {
   console.log('🌱 Starting seeders...\n');
@@ -27,6 +28,11 @@ export async function runSeeders(dataSource: DataSource) {
     console.log('👤 Seeding Users...');
     await seedUsers(dataSource);
     console.log('✅ Users seeded\n');
+
+    // 4. Seed Cash Categories
+    console.log('💰 Seeding Cash Categories...');
+    await seedCashCategories(dataSource);
+    console.log('✅ Cash Categories seeded\n');
 
     console.log('🎉 All seeders completed successfully!');
   } catch (error) {
