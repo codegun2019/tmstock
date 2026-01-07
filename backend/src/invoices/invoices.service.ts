@@ -15,6 +15,7 @@ import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceItem } from '../entities/InvoiceItem.entity';
 import { Product } from '../entities/Product.entity';
 import { StockService } from '../stock/stock.service';
+import { CashService } from '../cash/cash.service';
 import { InvoiceSequenceService } from './invoice-sequence.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { PayInvoiceDto } from './dto/pay-invoice.dto';
@@ -31,6 +32,7 @@ export class InvoicesService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     private stockService: StockService,
+    private cashService: CashService,
     private invoiceSequenceService: InvoiceSequenceService,
     private dataSource: DataSource,
   ) {}
@@ -199,6 +201,16 @@ export class InvoicesService {
           userId,
         );
       }
+
+      // ⭐ Auto-create cash transaction (IN)
+      await this.cashService.createFromInvoice(
+        queryRunner,
+        invoice.id,
+        invoice.total_amount,
+        invoice.branch_id,
+        payInvoiceDto.payment_method || invoice.payment_method || 'cash',
+        userId,
+      );
 
       // Update invoice status to completed
       invoice.status = 'completed';
